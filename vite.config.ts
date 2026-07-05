@@ -3,15 +3,22 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
+<<<<<<< HEAD
 const APP_BASE = '/mpal/'
 const THEME_COLOR = '#2563eb'
 
 export default defineConfig({
   base: APP_BASE,
+=======
+// https://vite.dev/config/
+export default defineConfig({
+  base: '/MPAL/',
+>>>>>>> origin/main
   plugins: [
     react(),
     tailwindcss(),
     VitePWA({
+<<<<<<< HEAD
       injectRegister: null,
       registerType: 'autoUpdate',
       manifest: {
@@ -60,4 +67,25 @@ export default defineConfig({
       }
     })
   ]
+=======
+      registerType: 'autoUpdate',
+      manifest: {
+        name: 'MPAL',
+        short_name: 'MPAL',
+        description: 'My Personal PWA Library',
+        theme_color: '#aa3bff',
+        background_color: '#ffffff',
+        display: 'standalone',
+        icons: [
+          {
+            src: 'favicon.svg',
+            sizes: 'any',
+            type: 'image/svg+xml',
+            purpose: 'any maskable',
+          },
+        ],
+      },
+    }),
+  ],
+>>>>>>> origin/main
 })
