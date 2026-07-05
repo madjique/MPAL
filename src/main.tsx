@@ -1,6 +1,5 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-<<<<<<< HEAD
 // @ts-expect-error - Virtual module registered by vite-plugin-pwa
 import { registerSW } from 'virtual:pwa-register'
 import App from './App'
@@ -36,10 +35,6 @@ if (typeof window !== 'undefined') {
     )
   }
 }
-=======
-import './index.css'
-import App from './App.tsx'
->>>>>>> origin/main
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
