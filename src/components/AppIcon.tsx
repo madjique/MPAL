@@ -4,6 +4,7 @@ import { Trash2 } from 'lucide-react'
 import { useLongPress } from '../hooks/useLongPress'
 import { type PwaApp } from '../store/useAppStore'
 import { cn } from '../utils/cn'
+import { getDisplayIconUrl } from '../utils/favicon'
 
 interface AppIconProps {
   app: PwaApp
@@ -15,6 +16,7 @@ interface AppIconProps {
 
 export function AppIcon({ app, onOpen, onDelete, compact = false }: AppIconProps) {
   const [showDelete, setShowDelete] = useState(false)
+  const iconSrc = getDisplayIconUrl(app.icon, app.iconUpdatedAt ?? app.addedAt)
 
   const longPress = useLongPress(() => setShowDelete(true))
 
@@ -71,7 +73,7 @@ export function AppIcon({ app, onOpen, onDelete, compact = false }: AppIconProps
       >
         {app.icon ? (
           <img
-            src={app.icon}
+            src={iconSrc}
             alt={app.name}
             className={cn('object-contain', compact ? 'h-6 w-6' : 'h-10 w-10')}
             onError={(e) => {

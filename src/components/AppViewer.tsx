@@ -4,6 +4,7 @@ import { X, ChevronRight, ChevronLeft } from 'lucide-react'
 import { useAppStore } from '../store/useAppStore'
 import { usePinchClose } from '../hooks/usePinchClose'
 import { cn } from '../utils/cn'
+import { getDisplayIconUrl } from '../utils/favicon'
 
 export function AppViewer() {
   const apps = useAppStore((state) => state.apps)
@@ -76,7 +77,7 @@ export function AppViewer() {
               >
                 {app.icon ? (
                   <img
-                    src={app.icon}
+                    src={getDisplayIconUrl(app.icon, app.iconUpdatedAt ?? app.addedAt)}
                     alt={app.name}
                     className="h-7 w-7 object-contain"
                     onError={(e) => {
