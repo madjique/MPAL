@@ -7,8 +7,9 @@ export interface PwaApp {
   id: string
   name: string
   url: string
-  /** Favicon URL – derived at add time */
+  /** Best-known PWA/app icon URL */
   icon: string
+  iconUpdatedAt?: number
   addedAt: number
 }
 
@@ -23,6 +24,7 @@ interface AppState {
   setActiveApp: (id: string | null) => void
   setTheme: (theme: ThemeMode) => void
   setHasHydrated: (value: boolean) => void
+  updateAppIcon: (id: string, icon: string) => void
 }
 
 export const useAppStore = create<AppState>()(
@@ -40,6 +42,7 @@ export const useAppStore = create<AppState>()(
             {
               ...app,
               id: crypto.randomUUID(),
+              iconUpdatedAt: Date.now(),
               addedAt: Date.now(),
             },
           ],
@@ -54,6 +57,18 @@ export const useAppStore = create<AppState>()(
       setActiveApp: (activeAppId) => set({ activeAppId }),
       setTheme: (theme) => set({ theme }),
       setHasHydrated: (hasHydrated) => set({ hasHydrated }),
+      updateAppIcon: (id, icon) =>
+        set((state) => ({
+          apps: state.apps.map((app) =>
+            app.id === id
+              ? {
+                  ...app,
+                  icon,
+                  iconUpdatedAt: Date.now(),
+                }
+              : app,
+          ),
+        })),
     }),
     {
       name: 'mpal-store',

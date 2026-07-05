@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'lucide-react'
 import { Modal } from './ui/Modal'
 import { Button } from './ui/Button'
 import { useAppStore } from '../store/useAppStore'
-import { getFaviconUrl, getAppName } from '../utils/favicon'
+import { getAppName, getDisplayIconUrl, resolveAppIconUrl } from '../utils/favicon'
 
 interface AddAppModalProps {
   open: boolean
@@ -22,8 +22,24 @@ export function AddAppModal({ open, onClose }: AddAppModalProps) {
   const [url, setUrl] = useState('')
   const [name, setName] = useState('')
   const [error, setError] = useState('')
+  const [derivedIcon, setDerivedIcon] = useState('')
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    const normalizedUrl = url ? normaliseUrl(url) : ''
+    if (!normalizedUrl) return
+
+    let active = true
+
+    void resolveAppIconUrl(normalizedUrl).then((icon) => {
+      if (active) setDerivedIcon(icon)
+    })
+
+    return () => {
+      active = false
+    }
+  }, [url])
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     const normUrl = normaliseUrl(url)
@@ -34,10 +50,11 @@ export function AddAppModal({ open, onClose }: AddAppModalProps) {
       return
     }
     const finalName = name.trim() || getAppName(normUrl)
-    const icon = getFaviconUrl(normUrl)
+    const icon = await resolveAppIconUrl(normUrl)
     addApp({ name: finalName, url: normUrl, icon })
     setUrl('')
     setName('')
+    setDerivedIcon('')
     onClose()
   }
 
@@ -45,11 +62,16 @@ export function AddAppModal({ open, onClose }: AddAppModalProps) {
     setUrl('')
     setName('')
     setError('')
+    setDerivedIcon('')
     onClose()
   }
 
+  const handleUrlChange = (nextUrl: string) => {
+    setUrl(nextUrl)
+    if (!nextUrl.trim()) setDerivedIcon('')
+  }
+
   const derivedName = name.trim() || (url ? getAppName(normaliseUrl(url)) : '')
-  const derivedIcon = url ? getFaviconUrl(normaliseUrl(url)) : ''
 
   return (
     <Modal open={open} onClose={handleClose} title="Add App">
@@ -58,7 +80,7 @@ export function AddAppModal({ open, onClose }: AddAppModalProps) {
         {(derivedName || derivedIcon) && (
           <div className="flex items-center gap-3 rounded-2xl border border-white/40 bg-white/30 px-4 py-3 dark:border-white/10 dark:bg-white/5">
             {derivedIcon && (
-              <img src={derivedIcon} alt="" className="h-8 w-8 rounded-xl object-contain" />
+              <img src={getDisplayIconUrl(derivedIcon)} alt="" className="h-8 w-8 rounded-xl object-contain" />
             )}
             <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
               {derivedName || 'App preview'}
@@ -77,7 +99,7 @@ export function AddAppModal({ open, onClose }: AddAppModalProps) {
               type="url"
               placeholder="https://example.com"
               value={url}
-              onChange={(e) => setUrl(e.target.value)}
+              onChange={(e) => handleUrlChange(e.target.value)}
               className="flex-1 bg-transparent text-sm text-slate-900 placeholder:text-slate-400 dark:text-white"
               autoFocus
               autoCapitalize="none"
